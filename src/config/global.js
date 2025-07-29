@@ -1,0 +1,1 @@
+singlePageWebsite = true;
