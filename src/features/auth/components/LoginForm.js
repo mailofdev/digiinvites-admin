@@ -1,21 +1,20 @@
 // auth/components/LoginForm.js
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-
+import routes from "../../../components/navigation/Routes";
 const LoginForm = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { login } = useAuth();
-
+  const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear error when user starts typing
     if (error) setError("");
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -25,6 +24,8 @@ const LoginForm = () => {
       const result = await login(formData.email, formData.password);
       if (!result.success) {
         setError(result.error || "Login failed. Please try again.");
+      } else {
+        navigate(routes?.[0]?.href); // Redirect to first tab after successful login
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
@@ -34,7 +35,7 @@ const LoginForm = () => {
   };
 
   return (
-    <form className="p-4 shadow rounded bg-white" onSubmit={handleSubmit}>
+    <form className="p-4 shadow rounded " onSubmit={handleSubmit}>
       <h4 className="mb-4 text-center">Login</h4>
 
       {error && (
