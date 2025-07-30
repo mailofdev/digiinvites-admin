@@ -102,20 +102,23 @@ const Topbar = ({
                   .map((item, idx) => (
                     <li className="nav-item" key={idx}>
                       {singlePageWebsite ? (
-                      <button
-  className={`nav-link d-flex align-items-center px-3 py-2 btn btn-link ${
-    location.hash === `#${item.href.replace("/", "")}`
-      ? "active bg-primary text-white"
-      : "text-body"
-  } ${item.danger ? "text-danger" : ""} rounded hover-bg-light`}
-  onClick={() => handleScrollToSection(item.href.replace("/", ""))}
->
-  {showIcons && item.icon && (
-    <i className={`bi ${item.icon} me-1`}></i>
-  )}
-  {item.label}
-</button>
-
+                        <button
+                          className={`nav-link d-flex align-items-center px-3 py-2 btn btn-link ${
+                            location.hash === `#${item.href.replace("/", "")}`
+                              ? "active bg-primary text-white"
+                              : "text-body"
+                          } ${
+                            item.danger ? "text-danger" : ""
+                          } rounded hover-bg-light`}
+                          onClick={() =>
+                            handleScrollToSection(item.href.replace("/", ""))
+                          }
+                        >
+                          {showIcons && item.icon && (
+                            <i className={`bi ${item.icon} me-1`}></i>
+                          )}
+                          {item.label}
+                        </button>
                       ) : (
                         <Link
                           to={item.href}

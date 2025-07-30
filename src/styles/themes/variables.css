@@ -20,6 +20,16 @@
   --color-link-hover: #0a58ca;
   --color-scrollbar: #adb5bd;
   --color-scrollbar-bg: #f1f1f1;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --color-shadow-hover: rgba(0, 0, 0, 0.15);
+  --color-input-bg: #ffffff;
+  --color-input-border: #ced4da;
+  --color-input-focus: #86b7fe;
+  --color-button-bg: #0d6efd;
+  --color-button-text: #ffffff;
+  --color-button-hover: #0b5ed7;
+  --color-button-secondary: #6c757d;
+  --color-button-secondary-hover: #5c636a;
 }
 
 /* Dark Theme */
@@ -40,4 +50,58 @@ body.dark {
   --color-link-hover: #64b5f6;
   --color-scrollbar: #555;
   --color-scrollbar-bg: #222;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+  --color-shadow-hover: rgba(0, 0, 0, 0.4);
+  --color-input-bg: #2c2c2c;
+  --color-input-border: #404040;
+  --color-input-focus: #90caf9;
+  --color-button-bg: #90caf9;
+  --color-button-text: #121212;
+  --color-button-hover: #64b5f6;
+  --color-button-secondary: #b0bec5;
+  --color-button-secondary-hover: #90a4ae;
+}
+
+/* Additional utility classes for theme support */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Ensure smooth transitions for all theme changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Override any remaining Bootstrap classes that might interfere */
+.bg-transparent {
+  background-color: transparent !important;
+}
+
+.text-reset {
+  color: inherit !important;
+}
+
+/* Ensure proper contrast in both themes */
+body.dark .text-dark {
+  color: var(--color-text) !important;
+}
+
+body.dark .text-light {
+  color: var(--color-text) !important;
+}
+
+body.dark .text-white {
+  color: var(--color-text) !important;
+}
+
+body:not(.dark) .text-dark {
+  color: var(--color-text) !important;
+}
+
+body:not(.dark) .text-light {
+  color: var(--color-text) !important;
+}
+
+body:not(.dark) .text-white {
+  color: var(--color-text) !important;
 }

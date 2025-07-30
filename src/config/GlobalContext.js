@@ -8,7 +8,7 @@ export const useGlobalContext = () => useContext(GlobalContext);
 
 // 3️⃣ Provider Component
 export const GlobalProvider = ({ children }) => {
-  const [singlePageWebsite, setSinglePageWebsite] = useState(true); 
+  const [singlePageWebsite, setSinglePageWebsite] = useState(false); 
 
   const value = {
     singlePageWebsite,

@@ -1,5 +1,11 @@
 const routes = [
   {
+    label: 'Dashboard',
+    href: '/dashboard',
+    icon: 'bi-house-door-fill', // Represents home/overview
+    showIn: ['sidebar', 'topbar'],
+  },
+  {
     label: 'Home',
     href: '/home',
     icon: 'bi-house-door-fill', // Represents home/overview
