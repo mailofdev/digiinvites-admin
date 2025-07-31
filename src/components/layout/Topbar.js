@@ -66,11 +66,11 @@ const Topbar = ({
     setNavbarOpen(false);
   };
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-3 shadow-sm sticky-top fixed-top">
+    <nav className="navbar navbar-expand-lg navbar-dark px-3 shadow-sm sticky-top fixed-top">
       <div className="container-fluid d-flex align-items-center justify-content-between flex-wrap">
         {/* Brand */}
         <Link to="/" className="navbar-brand fw-bold">
-          Ankit's Portfolio
+          Digi Invites
         </Link>
 
         {/* Toggle button for mobile */}

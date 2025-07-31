@@ -1,65 +1,94 @@
+import React from "react";
+
 const Dashboard = () => {
-    return (
-        <>
-             <div className="container py-4">
-        <h1 className="mb-4">Dashboard - Theme Test</h1>
+  return (
+    <div className="container py-4">
+      {/* Header */}
+      <div className="mb-4">
+        <h2 className="fw-bold">Dashboard</h2>
+        <p className="text-muted">Overview of your digital invites portal</p>
+      </div>
 
-        {/* Card */}
-        <div className="card mb-4 shadow-sm">
-          <div className="card-body">
-            <h5 className="card-title">Card Title</h5>
-            <p className="card-text">
-              This card's background, border, and text are themed using CSS variables.
-            </p>
-            <a href="#!" className="btn btn-primary me-2">Primary Action</a>
-            <a href="#!" className="btn btn-secondary">Secondary Action</a>
+      {/* Total Stats */}
+      <div className="row mb-4">
+        <div className="col-md-4 mb-3">
+          <div className="card text-center shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title">Active Users</h5>
+              <p className="display-6 fw-bold text-primary">1,234</p>
+            </div>
           </div>
         </div>
-
-        {/* Buttons */}
-        <div className="mb-4">
-          <button className="btn btn-primary me-2">Primary Button</button>
-          <button className="btn btn-secondary me-2">Secondary Button</button>
-          <button className="btn btn-outline-primary me-2">Outline Primary</button>
-          <button className="btn btn-outline-secondary">Outline Secondary</button>
-        </div>
-
-        {/* Table */}
-        <div className="table-responsive">
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th scope="col">Heading 1</th>
-                <th scope="col">Heading 2</th>
-                <th scope="col">Heading 3</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Data 1</td>
-                <td>Data 2</td>
-                <td>Data 3</td>
-              </tr>
-              <tr>
-                <td>Data A</td>
-                <td>Data B</td>
-                <td>Data C</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* Alerts */}
-        <div className="mt-4">
-          <div className="alert alert-primary" role="alert">
-            This is a primary alert — check it out!
+        <div className="col-md-4 mb-3">
+          <div className="card text-center shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title">Total Templates</h5>
+              <p className="display-6 fw-bold text-success">56</p>
+            </div>
           </div>
-          <div className="alert alert-secondary" role="alert">
-            This is a secondary alert — check it out!
+        </div>
+        <div className="col-md-4 mb-3">
+          <div className="card text-center shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title">Total Invitations</h5>
+              <p className="display-6 fw-bold text-warning">8,900</p>
+            </div>
           </div>
         </div>
       </div>
-        </>
-    )
-}
+
+      {/* Invitation Trends & Quick Create */}
+      <div className="row mb-4">
+        {/* Invitation Trends (Chart Placeholder) */}
+        <div className="mb-3">
+          <div className="card shadow-sm h-100">
+            <div className="card-body">
+              <h5 className="card-title mb-3">Invitation Trends</h5>
+              <div className="bg-light border rounded d-flex align-items-center justify-content-center" style={{height: 220}}>
+                <span className="text-muted">[Chart Placeholder]</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="row">
+        <div className="col-md-6 mb-3">
+          <div className="card shadow-sm h-100">
+            <div className="card-body">
+              <h6 className="card-title">Most Used Template</h6>
+              <div className="d-flex align-items-center">
+                <div className="me-3 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style={{width: 48, height: 48}}>
+                  <i className="bi bi-star-fill fs-4"></i>
+                </div>
+                <div>
+                  <div className="fw-bold">Elegant Wedding</div>
+                  <div className="text-muted small">Used 320 times</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-6 mb-3">
+          <div className="card shadow-sm h-100">
+            <div className="card-body">
+              <h6 className="card-title">Popular Category</h6>
+              <div className="d-flex align-items-center">
+                <div className="me-3 bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style={{width: 48, height: 48}}>
+                  <i className="bi bi-people-fill fs-4"></i>
+                </div>
+                <div>
+                  <div className="fw-bold">Birthday</div>
+                  <div className="text-muted small">1,200 invitations</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default Dashboard;
