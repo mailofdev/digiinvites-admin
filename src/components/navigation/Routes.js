@@ -11,12 +11,12 @@ const routes = [
     icon: 'bi-envelope-paper', // Represents invites/paper-style envelope
     showIn: ['sidebar', 'topbar'],
   },
-  // {
-  //   label: 'Templates',
-  //   href: '/templates',
-  //   icon: 'bi-layout-text-window', // Represents structured templates/layout
-  //   showIn: ['sidebar', 'topbar'],
-  // },
+  {
+    label: 'Templates',
+    href: '/templates',
+    icon: 'bi-layout-text-window', // Represents structured templates/layout
+    showIn: ['sidebar', 'topbar'],
+  },
   // {
   //   label: 'Users',
   //   href: '/users',

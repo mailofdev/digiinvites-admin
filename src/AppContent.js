@@ -18,6 +18,7 @@ import Users from "./features/users/Users";
 import Analytics from "./features/analytics/Analytics";
 import Settings from "./features/settings/Settings";
 import CreateFlow from "./features/createFlow/CreateFlow";
+import TemplatesDetails from "./features/templates/TemplatesDetails";
 
 const AppContent = () => {
   const { loading, isAuthenticated } = useAuth();
@@ -59,6 +60,8 @@ const AppContent = () => {
         <Route path="/invitations/new" element={<InvitationDetails />} />
         <Route path="/invitations/:id" element={<InvitationDetails />} />
         <Route path="/templates" element={<Templates />} />
+        <Route path="/templates/new" element={<TemplatesDetails />} />
+        <Route path="/templates/:id" element={<TemplatesDetails />} />
         <Route path="/users" element={<Users />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/settings" element={<Settings />} />
