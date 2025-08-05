@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
@@ -7,14 +7,24 @@ import TablePagination from "./TablePagination";
 
 const PAGE_SIZE = 5;
 
-const TableContainer = ({ columns = [], data = [], onRowSelect, actions = [], multiSelect = false, detailsRoute = "" }) => {
+const TableContainer = ({
+  columns = [],
+  data = [],
+  multiSelect = false,
+  actions = [],
+  onRowSelect,
+  onAdd,
+  onEdit,
+  onView,
+  onDelete
+}) => {
   const navigate = useNavigate();
   const [selectedRow, setSelectedRow] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  // Filtered and paginated data
+  // Filtered data based on search
   const filteredData = useMemo(() => {
     if (!search) return data;
     const lower = search.toLowerCase();
@@ -26,15 +36,23 @@ const TableContainer = ({ columns = [], data = [], onRowSelect, actions = [], mu
   }, [search, data, columns]);
 
   const pageCount = Math.ceil(filteredData.length / PAGE_SIZE) || 1;
+
   const paginatedData = useMemo(() => {
     const start = (page - 1) * PAGE_SIZE;
     return filteredData.slice(start, start + PAGE_SIZE);
   }, [filteredData, page]);
 
-  // Selection logic
+  // Reset page when search or data changes
+  useEffect(() => {
+    setPage(1);
+  }, [search, data.length]);
+
+  // Row selection logic
   const handleSelectRow = (idx) => {
     if (multiSelect) {
-      setSelectedRows(prev => prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]);
+      setSelectedRows(prev =>
+        prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+      );
     } else {
       setSelectedRow(idx);
     }
@@ -42,42 +60,37 @@ const TableContainer = ({ columns = [], data = [], onRowSelect, actions = [], mu
 
   const handleRowClick = (row, idx, e) => {
     if (e && (e.target.closest("button") || e.target.closest("a") || e.target.type === "radio" || e.target.type === "checkbox")) return;
-    if (!multiSelect) {
-      setSelectedRow(idx);
-    }
+    if (!multiSelect) setSelectedRow(idx);
     if (onRowSelect) onRowSelect(row, idx);
   };
 
+  // Handlers passed from parent
   const handleAddNew = () => {
-    if (detailsRoute) {
-      navigate(`${detailsRoute}/new`);
-    }
+    if (onAdd) onAdd();
   };
 
   const handleEdit = () => {
-    if (multiSelect) return;
-    if (selectedRow == null) return;
+    if (multiSelect || selectedRow == null) return;
     const rowData = data[selectedRow];
-    if (detailsRoute) {
-      navigate(`${detailsRoute}/${rowData.id || selectedRow}`, {
-        state: { mode: "edit", formData: rowData }
-      });
-    }
+    if (onEdit) onEdit(rowData);
   };
 
   const handleView = () => {
-    if (multiSelect) return;
-    if (selectedRow == null) return;
+    if (multiSelect || selectedRow == null) return;
     const rowData = data[selectedRow];
-    if (detailsRoute) {
-      navigate(`${detailsRoute}/${rowData.id || selectedRow}`, {
-        state: { mode: "view", formData: rowData }
-      });
-    }
+    if (onView) onView(rowData);
   };
 
   const handleDeleteTop = () => {
-    // Implement delete logic as needed
+    if (!onDelete) return;
+
+    if (multiSelect && selectedRows.length > 0) {
+      const selectedIds = selectedRows.map(idx => data[idx].id);
+      onDelete(selectedIds);
+    } else if (!multiSelect && selectedRow != null) {
+      const selectedId = data[selectedRow].id;
+      onDelete([selectedId]);
+    }
   };
 
   const renderSelectCell = (idx) => {
@@ -109,10 +122,6 @@ const TableContainer = ({ columns = [], data = [], onRowSelect, actions = [], mu
     }
   };
 
-  React.useEffect(() => {
-    setPage(1);
-  }, [search, data.length]);
-
   return (
     <div className="border-1 border-black card shadow-sm pt-2 pb-2">
       <TableToolbar
@@ -126,12 +135,17 @@ const TableContainer = ({ columns = [], data = [], onRowSelect, actions = [], mu
         selectedRow={selectedRow}
         selectedRows={selectedRows}
       />
-      <div className="table-responsive" style={{overflowX: 'auto', width: '100%'}}>
-        <table className="table table-hover table-striped align-middle" aria-labelledby="tableTitle" style={{minWidth: 700}}>
+
+      <div className="table-responsive" style={{ overflowX: 'auto', width: '100%' }}>
+        <table className="table table-hover table-striped align-middle" aria-labelledby="tableTitle" style={{ minWidth: 700 }}>
           <TableHeader columns={columns} actions={actions} multiSelect={multiSelect} />
           <tbody>
             {paginatedData.length === 0 ? (
-              <tr><td colSpan={columns.length + (actions.length > 0 ? 2 : 1)} className="text-center">No data</td></tr>
+              <tr>
+                <td colSpan={columns.length + (actions.length > 0 ? 2 : 1)} className="text-center">
+                  No data
+                </td>
+              </tr>
             ) : (
               paginatedData.map((row, idx) => {
                 const realIdx = (page - 1) * PAGE_SIZE + idx;
@@ -153,8 +167,9 @@ const TableContainer = ({ columns = [], data = [], onRowSelect, actions = [], mu
           </tbody>
         </table>
       </div>
+
       <div className="d-flex justify-content-between align-items-center mb-2 gap-2 ms-2 me-2">
-        <div className=" fs-6 fw-bold text-center w-auto me-2 ms-2 align-items-center d-flex">
+        <div className="fs-6 fw-bold text-center w-auto me-2 ms-2 align-items-center d-flex">
           Total records: {data?.length}
         </div>
         <TablePagination page={page} setPage={setPage} pageCount={pageCount} />
@@ -163,4 +178,4 @@ const TableContainer = ({ columns = [], data = [], onRowSelect, actions = [], mu
   );
 };
 
-export default TableContainer; 
+export default TableContainer;

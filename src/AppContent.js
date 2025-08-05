@@ -18,6 +18,7 @@ import Users from "./features/users/Users";
 import Analytics from "./features/analytics/Analytics";
 import Settings from "./features/settings/Settings";
 import CreateFlow from "./features/createFlow/CreateFlow";
+import CreateTemplate from "./features/templates/CreateTemplate";
 
 const AppContent = () => {
   const { loading, isAuthenticated } = useAuth();
@@ -63,6 +64,7 @@ const AppContent = () => {
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/create-flow" element={<CreateFlow />} />
+        <Route path="/create-template" element={<CreateTemplate />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </MainLayout>
