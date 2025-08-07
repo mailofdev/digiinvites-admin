@@ -53,6 +53,9 @@ const DynamicForm = ({
   onChange,
   onSubmit,
   onCancel,
+  singleButtonInCenter = false,
+  actionButtonName = "Submit",
+  twoRowForm = false,
 }) => {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState({});
@@ -143,229 +146,235 @@ const DynamicForm = ({
           </ul>
         </div>
       )}
-      <div className="row">
-        {memoizedSchema.map((field, idx) => {
-          let fieldEl = null;
-          const disabled = isViewMode || field.disabled;
-          const hasError = errors[field.name] || memoizedErrors[field.name];
-          const ref = hasError && !firstErrorRef.current ? firstErrorRef : null;
-          if (field.type === "input") {
-            fieldEl = (
+    <div className="row">
+  {memoizedSchema.map((field, idx) => {
+    let fieldEl = null;
+    const disabled = isViewMode || field.disabled;
+    const hasError = errors[field.name] || memoizedErrors[field.name];
+    const ref = hasError && !firstErrorRef.current ? firstErrorRef : null;
+
+    // Render input field types
+    if (field.type === "input") {
+      fieldEl = (
+        <input
+          type="text"
+          className={`form-control${hasError ? " is-invalid" : ""}`}
+          id={field.name}
+          name={field.name}
+          value={formData[field.name] || ""}
+          disabled={disabled}
+          onChange={(e) => handleChange(e, field.name, field.type)}
+          ref={ref}
+          aria-invalid={!!hasError}
+          aria-describedby={hasError ? `${field.name}-error` : undefined}
+        />
+      );
+    } else if (field.type === "textarea") {
+      fieldEl = (
+        <textarea
+          className={`form-control${hasError ? " is-invalid" : ""}`}
+          id={field.name}
+          name={field.name}
+          value={formData[field.name] || ""}
+          disabled={disabled}
+          onChange={(e) => handleChange(e, field.name, field.type)}
+          ref={ref}
+          aria-invalid={!!hasError}
+          aria-describedby={hasError ? `${field.name}-error` : undefined}
+        />
+      );
+    } else if (field.type === "select") {
+      fieldEl = (
+        <select
+          className={`form-select${hasError ? " is-invalid" : ""}`}
+          id={field.name}
+          name={field.name}
+          value={formData[field.name] || ""}
+          disabled={disabled}
+          onChange={(e) => handleChange(e, field.name, field.type)}
+          ref={ref}
+          aria-invalid={!!hasError}
+          aria-describedby={hasError ? `${field.name}-error` : undefined}
+        >
+          <option value="">Select...</option>
+          {field.options.map((option, idx) => (
+            <option key={idx} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      );
+    } else if (field.type === "checkbox") {
+      fieldEl = (
+        <div className="form-check">
+          <input
+            type="checkbox"
+            className={`form-check-input${hasError ? " is-invalid" : ""}`}
+            id={field.name}
+            name={field.name}
+            checked={formData[field.name] || false}
+            disabled={disabled}
+            onChange={(e) => handleChange(e, field.name, field.type)}
+            ref={ref}
+            aria-invalid={!!hasError}
+            aria-describedby={hasError ? `${field.name}-error` : undefined}
+          />
+          <label htmlFor={field.name} className="form-check-label">
+            {field.label}
+          </label>
+        </div>
+      );
+    } else if (field.type === "radio") {
+      fieldEl = (
+        <div>
+          {field.options.map((option, idx) => (
+            <div className="form-check" key={idx}>
               <input
-                type="text"
-                className={`form-control${hasError ? " is-invalid" : ""}`}
-                id={field.name}
+                type="radio"
+                className={`form-check-input${hasError ? " is-invalid" : ""}`}
+                id={`${field.name}_${option.value}`}
                 name={field.name}
-                value={formData[field.name] || ""}
+                value={option.value}
+                checked={formData[field.name] === option.value}
                 disabled={disabled}
                 onChange={(e) => handleChange(e, field.name, field.type)}
                 ref={ref}
                 aria-invalid={!!hasError}
                 aria-describedby={hasError ? `${field.name}-error` : undefined}
               />
-            );
-          } else if (field.type === "textarea") {
-            fieldEl = (
-              <textarea
-                className={`form-control${hasError ? " is-invalid" : ""}`}
-                id={field.name}
-                name={field.name}
-                value={formData[field.name] || ""}
-                disabled={disabled}
-                onChange={(e) => handleChange(e, field.name, field.type)}
-                ref={ref}
-                aria-invalid={!!hasError}
-                aria-describedby={hasError ? `${field.name}-error` : undefined}
-              />
-            );
-          } else if (field.type === "select") {
-            fieldEl = (
-              <select
-                className={`form-select${hasError ? " is-invalid" : ""}`}
-                id={field.name}
-                name={field.name}
-                value={formData[field.name] || ""}
-                disabled={disabled}
-                onChange={(e) => handleChange(e, field.name, field.type)}
-                ref={ref}
-                aria-invalid={!!hasError}
-                aria-describedby={hasError ? `${field.name}-error` : undefined}
+              <label
+                htmlFor={`${field.name}_${option.value}`}
+                className="form-check-label"
               >
-                <option value="">Select...</option>
-                {field.options.map((option, idx) => (
-                  <option key={idx} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            );
-          } else if (field.type === "checkbox") {
-            fieldEl = (
-              <div className="form-check">
-                <input
-                  type="checkbox"
-                  className={`form-check-input${hasError ? " is-invalid" : ""}`}
-                  id={field.name}
-                  name={field.name}
-                  checked={formData[field.name] || false}
-                  disabled={disabled}
-                  onChange={(e) => handleChange(e, field.name, field.type)}
-                  ref={ref}
-                  aria-invalid={!!hasError}
-                  aria-describedby={
-                    hasError ? `${field.name}-error` : undefined
-                  }
-                />
-                <label htmlFor={field.name} className="form-check-label">
-                  {field.label}
-                </label>
-              </div>
-            );
-          } else if (field.type === "radio") {
-            fieldEl = (
-              <div>
-                {field.options.map((option, idx) => (
-                  <div className="form-check" key={idx}>
-                    <input
-                      type="radio"
-                      className={`form-check-input${
-                        hasError ? " is-invalid" : ""
-                      }`}
-                      id={`${field.name}_${option.value}`}
-                      name={field.name}
-                      value={option.value}
-                      checked={formData[field.name] === option.value}
-                      disabled={disabled}
-                      onChange={(e) => handleChange(e, field.name, field.type)}
-                      ref={ref}
-                      aria-invalid={!!hasError}
-                      aria-describedby={
-                        hasError ? `${field.name}-error` : undefined
-                      }
-                    />
-                    <label
-                      htmlFor={`${field.name}_${option.value}`}
-                      className="form-check-label"
-                    >
-                      {option.label}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            );
-          } else if (field.type === "date") {
-            fieldEl = (
-              <input
-                type="date"
-                className={`form-control${hasError ? " is-invalid" : ""}`}
-                id={field.name}
-                name={field.name}
-                value={formData[field.name] || ""}
-                disabled={disabled}
-                onChange={(e) => handleChange(e, field.name, field.type)}
-                ref={ref}
-                aria-invalid={!!hasError}
-                aria-describedby={hasError ? `${field.name}-error` : undefined}
-              />
-            );
-          } else if (field.type === "password") {
-            fieldEl = (
-              <div className="input-group">
-                <input
-                  type={showPassword[field.name] ? "text" : "password"}
-                  className={`form-control${hasError ? " is-invalid" : ""}`}
-                  id={field.name}
-                  name={field.name}
-                  value={formData[field.name] || ""}
-                  disabled={disabled}
-                  onChange={(e) => handleChange(e, field.name, field.type)}
-                  ref={ref}
-                  aria-invalid={!!hasError}
-                  aria-describedby={
-                    hasError ? `${field.name}-error` : undefined
-                  }
-                />
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  tabIndex={-1}
-                  onClick={() => togglePasswordVisibility(field.name)}
-                  aria-label={
-                    showPassword[field.name] ? "Hide password" : "Show password"
-                  }
-                  disabled={disabled}
-                >
-                  <i
-                    className={`bi ${
-                      showPassword[field.name] ? "bi-eye-slash" : "bi-eye"
-                    }`}
-                  ></i>
-                </button>
-              </div>
-            );
-          } else if (field.type === "email") {
-            fieldEl = (
-              <input
-                type="email"
-                className={`form-control${hasError ? " is-invalid" : ""}`}
-                id={field.name}
-                name={field.name}
-                value={formData[field.name] || ""}
-                disabled={disabled}
-                onChange={(e) => handleChange(e, field.name, field.type)}
-                ref={ref}
-                aria-invalid={!!hasError}
-                aria-describedby={hasError ? `${field.name}-error` : undefined}
-              />
-            );
-          }
-          return (
-            <div className="mb-3 col-md-12 col-12" key={idx}>
-              <label htmlFor={field.name} className="form-label">
-                {field.label}
-                {field.required && <span className="text-danger ms-1">*</span>}
+                {option.label}
               </label>
-              {fieldEl}
-              {hasError && (
-                <div
-                  className="invalid-feedback d-block"
-                  id={`${field.name}-error`}
-                >
-                  {errors[field.name] || memoizedErrors[field.name]}
-                </div>
-              )}
             </div>
-          );
-        })}
-      </div>
-      {(mode === "view" || mode === "edit" || mode === "add") && (
-        <div className="d-flex gap-2 justify-content-end">
-          {mode === "edit" ||  mode === "add" && (
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading}
-            >
-              {loading && (
-                <span
-                  className="spinner-border spinner-border-sm me-2"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
-              )}
-              {mode === "edit" ? 'Update' : 'Submit'}
-            </button>
-          )}
+          ))}
+        </div>
+      );
+    } else if (field.type === "date") {
+      fieldEl = (
+        <input
+          type="date"
+          className={`form-control${hasError ? " is-invalid" : ""}`}
+          id={field.name}
+          name={field.name}
+          value={formData[field.name] || ""}
+          disabled={disabled}
+          onChange={(e) => handleChange(e, field.name, field.type)}
+          ref={ref}
+          aria-invalid={!!hasError}
+          aria-describedby={hasError ? `${field.name}-error` : undefined}
+        />
+      );
+    } else if (field.type === "password") {
+      fieldEl = (
+        <div className="input-group">
+          <input
+            type={showPassword[field.name] ? "text" : "password"}
+            className={`form-control${hasError ? " is-invalid" : ""}`}
+            id={field.name}
+            name={field.name}
+            value={formData[field.name] || ""}
+            disabled={disabled}
+            onChange={(e) => handleChange(e, field.name, field.type)}
+            ref={ref}
+            aria-invalid={!!hasError}
+            aria-describedby={hasError ? `${field.name}-error` : undefined}
+          />
           <button
             type="button"
-            className="btn btn-secondary"
-            onClick={onCancel}
-            disabled={loading}
+            className="btn btn-outline-secondary"
+            tabIndex={-1}
+            onClick={() => togglePasswordVisibility(field.name)}
+            aria-label={
+              showPassword[field.name] ? "Hide password" : "Show password"
+            }
+            disabled={disabled}
           >
-            Cancel
+            <i
+              className={`bi ${
+                showPassword[field.name] ? "bi-eye-slash" : "bi-eye"
+              }`}
+            ></i>
           </button>
         </div>
-      )}
+      );
+    } else if (field.type === "email") {
+      fieldEl = (
+        <input
+          type="email"
+          className={`form-control${hasError ? " is-invalid" : ""}`}
+          id={field.name}
+          name={field.name}
+          value={formData[field.name] || ""}
+          disabled={disabled}
+          onChange={(e) => handleChange(e, field.name, field.type)}
+          ref={ref}
+          aria-invalid={!!hasError}
+          aria-describedby={hasError ? `${field.name}-error` : undefined}
+        />
+      );
+    }
+
+    return (
+      <div
+        className={`mb-3 ${twoRowForm ? "col-md-6" : "col-md-12"} col-12`}
+        key={idx}
+      >
+        {field.type !== "checkbox" && field.type !== "radio" && (
+          <label htmlFor={field.name} className="form-label">
+            {field.label}
+            {field.required && <span className="text-danger ms-1">*</span>}
+          </label>
+        )}
+        {fieldEl}
+        {hasError && (
+          <div className="invalid-feedback d-block" id={`${field.name}-error`}>
+            {errors[field.name] || memoizedErrors[field.name]}
+          </div>
+        )}
+      </div>
+    );
+  })}
+</div>
+
+   {(mode === "view" || mode === "edit" || mode === "add") && (
+  <div
+    className={`d-flex gap-2 ${
+      singleButtonInCenter ? "justify-content-center" : "justify-content-end"
+    }`}
+  >
+    {(mode === "edit" || mode === "add") && (
+      <button
+        type="submit"
+        className={`btn btn-primary ${singleButtonInCenter ? "w-100" : ""}`}
+        disabled={loading}
+      >
+        {loading && (
+          <span
+            className="spinner-border spinner-border-sm me-2"
+            role="status"
+            aria-hidden="true"
+          ></span>
+        )}
+        {actionButtonName}
+      </button>
+    )}
+
+    {!singleButtonInCenter && (
+      <button
+        type="button"
+        className="btn btn-secondary"
+        onClick={onCancel}
+        disabled={loading}
+      >
+        Cancel
+      </button>
+    )}
+  </div>
+)}
+
     </form>
   );
 };
