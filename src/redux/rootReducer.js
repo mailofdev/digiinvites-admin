@@ -1,11 +1,8 @@
 import { combineReducers } from 'redux';
-import authReducer from '../features/auth/authSlice';
-// import templateReducer from '../features/templates/templateSlice';
+// import authReducer from './slices/authSlice';
 
 const rootReducer = combineReducers({
-  auth: authReducer,
-//   templates: templateReducer,
-  // add more slices
+  // auth: authReducer
 });
 
 export default rootReducer;
