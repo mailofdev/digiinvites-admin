@@ -25,8 +25,6 @@ const Topbar = ({showSearch = true,
   const handleLogoutClick = () => setShowLogoutModal(true);
   
   const handleLogoutConfirm = () => {
-    sessionStorage.clear();
-    localStorage.clear();
     dispatch(logout());
     window.location.href = "/login";
   };
