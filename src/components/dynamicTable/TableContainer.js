@@ -5,15 +5,17 @@ import TableRow from "./TableRow";
 import TableToolbar from "./TableToolbar";
 import TablePagination from "./TablePagination";
 
-const PAGE_SIZE = 5;
 
-const TableContainer = ({ columns = [], data = [], onRowSelect, actions = [], multiSelect = false, detailsRoute = "" }) => {
+
+const TableContainer = ({ columns = [], data = [], onRowSelect, actions = [], multiSelect = false, detailsRoute = "", itemPerPage = 10, onDeleteConfirm,  }) => {
+  const PAGE_SIZE = itemPerPage;
   const navigate = useNavigate();
   const [selectedRow, setSelectedRow] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-
+ const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletingIds, setDeletingIds] = useState([]);
   // Filtered and paginated data
   const filteredData = useMemo(() => {
     if (!search) return data;
@@ -76,9 +78,36 @@ const TableContainer = ({ columns = [], data = [], onRowSelect, actions = [], mu
     }
   };
 
-  const handleDeleteTop = () => {
-    // Implement delete logic as needed
+const handleDeleteTop = () => {
+  let idsToDelete = [];
+  if (multiSelect) {
+    idsToDelete = selectedRows.map(idx => data[idx]?._id);
+  } else if (selectedRow !== null) {
+    idsToDelete = [data[selectedRow]?._id];
+  }
+  if (idsToDelete.length === 0) return;
+
+  setDeletingIds(idsToDelete);
+  setShowDeleteConfirm(true);
+};
+
+  // Cancel delete modal
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setDeletingIds([]);
   };
+
+  // Confirm delete modal
+  const confirmDelete = async () => {
+    if (onDeleteConfirm) {
+      await onDeleteConfirm(deletingIds);
+    }
+    setShowDeleteConfirm(false);
+    setDeletingIds([]);
+    setSelectedRow(null);
+    setSelectedRows([]);
+  };
+
 
   const renderSelectCell = (idx) => {
     if (multiSelect) {
@@ -159,6 +188,62 @@ const TableContainer = ({ columns = [], data = [], onRowSelect, actions = [], mu
         </div>
         <TablePagination page={page} setPage={setPage} pageCount={pageCount} />
       </div>
+       {showDeleteConfirm && (
+  <div
+    className="modal fade show d-block"
+    tabIndex={-1}
+    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+    aria-modal="true"
+    role="dialog"
+  >
+    <div className="modal-dialog modal-dialog-centered">
+      <div className="modal-content shadow-lg rounded-3">
+        {/* Header */}
+        <div className="modal-header border-0">
+          <h5 className="modal-title fw-bold text-danger">
+            <i className="bi bi-exclamation-triangle-fill me-2"></i>
+            Confirm Delete
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            aria-label="Close"
+            onClick={cancelDelete}
+          ></button>
+        </div>
+
+        {/* Body */}
+        <div className="modal-body text-center">
+          <p className="mb-0">
+            Are you sure you want to delete the selected item(s)? <br />
+            <span className="text-muted small">
+              This action cannot be undone.
+            </span>
+          </p>
+        </div>
+
+        {/* Footer */}
+        <div className="modal-footer border-0 justify-content-center gap-2">
+          <button
+            type="button"
+            className="btn btn-secondary px-4"
+            onClick={cancelDelete}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger px-4"
+            onClick={confirmDelete}
+          >
+            <i className="bi bi-trash-fill me-1"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

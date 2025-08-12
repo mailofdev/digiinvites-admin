@@ -1,20 +1,100 @@
-import { BrowserRouter as Router } from "react-router-dom";
-import { GlobalProvider } from "./config/GlobalContext";
-import { AuthProvider } from "./features/auth";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import AppContent from "./AppContent";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./styles/themes/variables.css";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/navigation/ProtectedRoute";
+
+import MainLayout from "./layouts/MainLayout";
+import Invitations from "./features/invitations/Invitations";
+import InvitationDetails from "./features/invitations/InvitationDetails";
+import NotFound from "./features/errors/NotFound";
+import Dashboard from "./features/dashboard/Dashboard";
+import LoginForm from "./features/auth/LoginForm";
+import RegisterForm from "./features/auth/RegisterForm";
+import ResetPasswordForm from "./features/auth/ResetPasswordForm";
+import Users from "./features/users/Users";
+import UserDetails from "./features/users/UserDetails";
+
+function ProtectedLayout({ children, config }) {
+  return (
+    <ProtectedRoute>
+      <MainLayout config={config}>{children}</MainLayout>
+    </ProtectedRoute>
+  );
+}
 
 function App() {
   return (
     <Router>
-      <ThemeProvider>
-        <GlobalProvider>
-          <AuthProvider>
-            <AppContent />
-          </AuthProvider>
-        </GlobalProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<LoginForm />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/reset-password" element={<ResetPasswordForm />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedLayout config={{ showTopbar: true, showSidebar: false, showFooter: false }}>
+                <Dashboard />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <ProtectedLayout>
+                <Users />
+              </ProtectedLayout>
+            }
+          />
+           <Route
+            path="/users/new"
+            element={
+              <ProtectedLayout>
+                <UserDetails />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/users/:id"
+            element={
+              <ProtectedLayout>
+                <UserDetails />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/invitations"
+            element={
+              <ProtectedLayout>
+                <Invitations />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/invitations/new"
+            element={
+              <ProtectedLayout>
+                <InvitationDetails />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/invitations/:id"
+            element={
+              <ProtectedLayout>
+                <InvitationDetails />
+              </ProtectedLayout>
+            }
+          />
+
+          {/* Catch-all */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </AuthProvider>
     </Router>
   );
 }

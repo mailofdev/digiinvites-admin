@@ -3,18 +3,18 @@ import layoutConfig from '../config/layout';
 import Sidebar from '../components/layout/Sidebar';
 import Topbar from '../components/layout/Topbar';
 import Footer from '../components/layout/Footer';
-import { useAuth } from '../features/auth/hooks/useAuth';
+// import { useAuth } from '../features/auth/hooks/useAuth';
 
 const MainLayout = ({ children, config }) => {
-  const { user, logout } = useAuth();
+  // const { user, logout } = useAuth();
   const cfg = { ...layoutConfig, ...config };
 
   const handleLogout = () => {
-    logout();
+    // logout();
   };
 
   const handleProfile = () => {
-    console.log("Profile clicked for user:", user);
+
   };
 
   return (
@@ -26,12 +26,12 @@ const MainLayout = ({ children, config }) => {
           showUserMenu={true} 
           showThemeToggle={true} 
           showIcons={true} 
-          singlePageWebsite={true}
-          user={user ? { 
-            name: user.name, 
-            email: user.email,
-            avatar: "https://i.pravatar.cc/30" 
-          } : { name: "User", avatar: "https://i.pravatar.cc/30" }}
+          // user={
+          //   user ? { 
+          //   // name: user.name, 
+          //   // email: user.email,
+          //   avatar: "https://i.pravatar.cc/30" 
+          // } : { name: "User", avatar: "https://i.pravatar.cc/30" }}
           onLogout={handleLogout}
           onProfile={handleProfile}
         />

@@ -115,3 +115,9 @@ a:hover {
 .text-muted {
   color: var(--color-muted) !important;
 }
+
+
+/* modal */
+.modal-dialog-centered{
+  background: transparent !important;
+}

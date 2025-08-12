@@ -1,85 +1,84 @@
-// auth/components/LoginForm.js
+// src/features/auth/components/LoginForm.js
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { login, selectAuth } from "../../redux/slices/authSlice";
+import { useDispatch } from "react-redux";
+import { loginThunk } from "./authThunks";
+import { encryptToken } from "../../utils/crypto";
 import DynamicForm from "../../components/forms/DynamicForm";
 import routes from "../../components/navigation/Routes";
 
 const LoginForm = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector(selectAuth); // ✅ Redux state
+  const dispatch = useDispatch();
 
   const schema = [
-    {
-      type: "email",
-      name: "email",
-      label: "Email",
-      required: true,
-    },
-    {
-      type: "password",
-      name: "password",
-      label: "Password",
-      required: true,
-    },
+    { type: "email", name: "email", label: "Email", required: true },
+    { type: "password", name: "password", label: "Password", required: true },
   ];
 
   const [formData, setFormData] = useState({});
-  const [localError, setLocalError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = async (data) => {
-    setLocalError(""); // clear local error
+const handleSubmit = async (data) => {
+  setErrorMessage("");
+  try {
+    const result = await dispatch(loginThunk(data)).unwrap();
 
-    const resultAction = await dispatch(login({ email: data.email, password: data.password }));
+    // Encrypt and store token
+    const encrypted = encryptToken(result.accessToken);
+    sessionStorage.setItem("access_token", encrypted);
 
-    if (login.fulfilled.match(resultAction)) {
-      navigate(routes?.find((r) => r.name === "Dashboard")?.href || "/dashboard");
-    } else {
-      setLocalError(resultAction.payload || "Login failed. Please try again.");
-    }
-  };
+    // Navigate directly
+    navigate("/dashboard", { replace: true });
+  } catch (error) {
+    setErrorMessage(error || "Login failed. Please try again.");
+  }
+};
+
 
   const handleCancel = () => {
     setFormData({});
-    setLocalError("");
+    setErrorMessage("");
   };
 
   return (
-    <div className="card p-4">
-      <h4 className="mb-3 text-center">Login</h4>
+    <div
+      className="d-flex justify-content-center align-items-center vh-100"
+      style={{ backgroundColor: "#FDF4DC", borderRadius: "10px" }}
+    >
+      <div
+        className="card p-4 shadow-sm"
+        style={{ maxWidth: "400px", width: "100%" }}
+      >
+        <h4 className="mb-3 text-center">Login</h4>
 
-      {(localError || error) && (
-        <div className="alert alert-danger" role="alert">
-          {localError || error}
+        {errorMessage && (
+          <div className="alert alert-danger py-2">{errorMessage}</div>
+        )}
+
+        <DynamicForm
+          schema={schema}
+          formData={formData}
+          onChange={setFormData}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+          singleButtonInCenter={true}
+          twoRowForm={false}
+        />
+
+        <div className="text-center mt-3">
+          <p className="mb-1">
+            Don&apos;t have an account?{" "}
+            <Link to="/register" className="text-decoration-none">
+              Register
+            </Link>
+          </p>
+          <p className="mb-0">
+            <Link to="/reset-password" className="text-decoration-none">
+              Forgot password?
+            </Link>
+          </p>
         </div>
-      )}
-
-      <DynamicForm
-        schema={schema}
-        formData={formData}
-        onChange={setFormData}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-        actionButtonName={loading ? "Logging in..." : "Login"}
-        singleButtonInCenter={true}
-        twoRowForm={false}
-        loading={loading}
-      />
-
-      <div className="text-center mt-2">
-        <p className="mb-2">
-          Don&apos;t have an account?{" "}
-          <Link to="/register" className="text-decoration-none">
-            Register here
-          </Link>
-        </p>
-        <p className="mb-0">
-          <Link to="/reset-password" className="text-decoration-none">
-            Forgot your password?
-          </Link>
-        </p>
       </div>
     </div>
   );

@@ -1,32 +1,55 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { loginAPI } from '../../services/authAPI';
+// src/features/auth/authSlice.js
+import { createSlice } from "@reduxjs/toolkit";
+import { loginThunk, registerThunk, getCurrentUserThunk } from "./authThunks";
 
-export const login = createAsyncThunk('auth/login', async (credentials) => {
-  const res = await loginAPI(credentials);
-  return res.data;
-});
+const initialState = {
+  user: null,
+ token: sessionStorage.getItem("access_token") || null,
+  loading: false,
+  error: null,
+};
 
 const authSlice = createSlice({
-  name: 'auth',
-  initialState: { user: null, loading: false },
+  name: "auth",
+  initialState,
   reducers: {
     logout: (state) => {
       state.user = null;
-    }
+      state.token = null;
+      sessionStorage.removeItem("access_token");
+      sessionStorage.removeItem("user_id");
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(login.pending, (state) => {
+      .addCase(loginThunk.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(loginThunk.fulfilled, (state, action) => {
         state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.accessToken;
+        sessionStorage.setItem("access_token", action.payload.accessToken);
+        sessionStorage.setItem("user_id", action.payload.user.id);
+      })
+      .addCase(loginThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Login failed";
+      })
+      .addCase(registerThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+      })
+            // ✅ handle current user fetch
+      .addCase(getCurrentUserThunk.fulfilled, (state, action) => {
         state.user = action.payload;
       })
-      .addCase(login.rejected, (state) => {
-        state.loading = false;
+      .addCase(getCurrentUserThunk.rejected, (state, action) => {
+        state.error = action.payload || "Failed to load user";
       });
-  }
+
+  },
 });
 
 export const { logout } = authSlice.actions;
