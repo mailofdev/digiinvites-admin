@@ -18,6 +18,8 @@ const authSlice = createSlice({
       state.token = null;
       sessionStorage.removeItem("access_token");
       sessionStorage.removeItem("user_id");
+       sessionStorage.clear();
+    localStorage.clear();
     },
   },
   extraReducers: (builder) => {
